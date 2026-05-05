@@ -1,0 +1,22 @@
+
+module pc_reg(
+	clk,
+	rst,
+	pc_new,
+	pc_out
+);
+	input clk;
+	input rst;
+	input [31:0]pc_new;
+	
+	output reg [31:0]pc_out;
+	
+	always@(posedge clk or negedge rst) begin
+		if(!rst) begin
+			pc_out <= 32'd0;
+		end else begin
+			pc_out <= pc_new;
+		end
+	end
+
+endmodule

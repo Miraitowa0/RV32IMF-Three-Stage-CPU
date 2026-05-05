@@ -1,0 +1,28 @@
+module if_stage(
+	input clk,
+	input rst,
+	input [31:0]pc_if_i,
+	output [31:0]pc_if_o,
+	output [31:0]pc_order_if_o,
+	output [7:0]rom_addr
+);
+
+	pc_reg pc_reg_inst (
+    .clk(clk), 
+    .rst(rst), 
+    .pc_new(pc_if_i), 
+    .pc_out(pc_if_o)
+    );
+	
+	cal_adder32 pc_adder_4( //顺序执行时pc更新值计算 pc + 4
+		.A(pc_if_o),
+		.B(32'd4),
+		.cin(1'd0),
+		.result(pc_order_if_o),
+		.cout()
+	);
+	
+	assign rom_addr=pc_if_o[9:2];
+
+endmodule
+

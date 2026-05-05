@@ -1,0 +1,249 @@
+`include "define.v"
+module id_ex_regs(
+	input clk,
+	input rst,
+	input jump_flag,
+	
+	input [31:0]pc_id_ex_i,
+	input [31:0]imme_id_ex_i,
+	input [31:0]Rs1_Data_id_ex_i,
+	input [31:0]Rs2_Data_id_ex_i,
+	input [4:0]Rd_id_ex_i,
+	
+	output reg [31:0]pc_id_ex_o,
+	output reg [31:0]imme_id_ex_o,
+	output reg [31:0]Rs1_Data_id_ex_o,
+	output reg [31:0]Rs2_Data_id_ex_o,
+	output reg [4:0]Rd_id_ex_o,
+	
+	input Memread_id_ex_i, //数据存储器读使能
+	input MemtoReg_id_ex_i, //MemtoReg 为1时选择data_dm_to_reg,即数据存储器的数据，即load指令时
+	input MemWrite_id_ex_i,
+	input ALUsrc_id_ex_i,
+	input RegWrite_id_ex_i,
+	input lui_id_ex_i,
+	input U_type_id_ex_i,
+	input jal_id_ex_i,
+	input jalr_id_ex_i,
+	input beq_id_ex_i,
+	input bne_id_ex_i,
+	input blt_id_ex_i,
+	input bge_id_ex_i,
+	input bltu_id_ex_i,
+	input bgeu_id_ex_i,
+	input [2:0]RW_type_id_ex_i,
+	input [4:0]ALU_Ctrl_id_ex_i,
+	
+	output reg Memread_id_ex_o, //数据存储器读使能
+	output reg MemtoReg_id_ex_o, //MemtoReg 为1时选择data_dm_to_reg,即数据存储器的数据，即load指令时
+	output reg MemWrite_id_ex_o,
+	output reg ALUsrc_id_ex_o,
+	output reg RegWrite_id_ex_o,
+	output reg lui_id_ex_o,
+	output reg U_type_id_ex_o,
+	output reg jal_id_ex_o,
+	output reg jalr_id_ex_o,
+	output reg beq_id_ex_o,
+	output reg bne_id_ex_o,
+	output reg blt_id_ex_o,
+	output reg bge_id_ex_o,
+	output reg bltu_id_ex_o,
+	output reg bgeu_id_ex_o,
+	output reg [2:0]RW_type_id_ex_o,
+	output reg [4:0]ALU_Ctrl_id_ex_o
+	
+);
+	
+	
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			pc_id_ex_o<=`zero_word;
+		else
+			pc_id_ex_o<=pc_id_ex_i;
+	end
+		
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			imme_id_ex_o<=`zero_word;
+		else
+			imme_id_ex_o<=imme_id_ex_i;
+	end
+		
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			Rs1_Data_id_ex_o<=`zero_word;
+		else
+			Rs1_Data_id_ex_o<=Rs1_Data_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			Rs2_Data_id_ex_o<=`zero_word;
+		else
+			Rs2_Data_id_ex_o<=Rs2_Data_id_ex_i;
+	end
+		
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			Rd_id_ex_o <= 5'd0;
+		else
+			Rd_id_ex_o <= Rd_id_ex_i;
+	end
+	
+	always@(posedge clk or negedge rst) begin   //////////////////////////////控制冒险需要解决的信号
+		if(!rst)
+			Memread_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			Memread_id_ex_o <= 1'b0;
+		else
+			Memread_id_ex_o <= Memread_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			MemtoReg_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			MemtoReg_id_ex_o <= 1'b0;
+		else
+			MemtoReg_id_ex_o <= MemtoReg_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			MemWrite_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			MemWrite_id_ex_o <= 1'b0;
+		else
+			MemWrite_id_ex_o <= MemWrite_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			ALUsrc_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			ALUsrc_id_ex_o <= 1'b0;
+		else
+			ALUsrc_id_ex_o <= ALUsrc_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			RegWrite_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			RegWrite_id_ex_o <= 1'b0;
+		else
+			RegWrite_id_ex_o <= RegWrite_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			lui_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			lui_id_ex_o <= 1'b0;
+		else
+			lui_id_ex_o <= lui_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			U_type_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			U_type_id_ex_o <= 1'b0;
+		else
+			U_type_id_ex_o <= U_type_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			jal_id_ex_o  <= 1'b0;
+		else if(jump_flag) 
+			jal_id_ex_o  <= 1'b0;
+		else
+			jal_id_ex_o <= jal_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			jalr_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			jalr_id_ex_o <= 1'b0;
+		else
+			jalr_id_ex_o <= jalr_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			beq_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			beq_id_ex_o <= 1'b0;
+		else
+			beq_id_ex_o <= beq_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			bne_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			bne_id_ex_o <= 1'b0;
+		else
+			bne_id_ex_o <= bne_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			blt_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			blt_id_ex_o <= 1'b0;
+		else
+			blt_id_ex_o <= blt_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			bge_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			bge_id_ex_o <= 1'b0;
+		else
+			bge_id_ex_o <= bge_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			bltu_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			bltu_id_ex_o <= 1'b0;
+		else
+			bltu_id_ex_o <= bltu_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			bgeu_id_ex_o <= 1'b0;
+		else if(jump_flag) 
+			bgeu_id_ex_o <= 1'b0;
+		else
+			bgeu_id_ex_o <= bgeu_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			RW_type_id_ex_o <= 3'd0;
+		else if(jump_flag) 
+			RW_type_id_ex_o <= 3'd0;
+		else
+			RW_type_id_ex_o <= RW_type_id_ex_i;
+	end
+
+	always@(posedge clk or negedge rst) begin
+		if(!rst)
+			ALU_Ctrl_id_ex_o <= 5'd0;
+		else if(jump_flag) 
+			ALU_Ctrl_id_ex_o <= 5'd0;
+		else
+			ALU_Ctrl_id_ex_o <= ALU_Ctrl_id_ex_i;
+	end
+	
+	
+endmodule
+
+

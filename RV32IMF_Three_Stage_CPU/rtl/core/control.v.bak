@@ -1,0 +1,57 @@
+`include "define.v"
+module control(
+	input [6:0]opcode,
+	input [2:0]funct3,
+	input [6:0]funct7,
+	output Memread, //数据存储器读使能
+	output MemtoReg, //MemtoReg 为1时选择data_dm_to_reg,即数据存储器的数据，即load指令时
+	output MemWrite,
+	output ALUsrc,
+	output RegWrite,
+	output lui,
+	output U_type,
+	output jal,
+	output jalr,
+	output beq,
+	output bne,
+	output blt,
+	output bge,
+	output bltu,
+	output bgeu,
+	output [2:0]RW_type,
+	output [4:0]ALU_Ctrl
+);
+
+	wire [1:0]ALUop;
+	
+	main_control main_control_inst(
+		.opcode(opcode),
+		.funct3(funct3),
+		.Memread(Memread), //数据存储器读使能
+		.ALUop(ALUop),
+		.MemtoReg(MemtoReg), //MemtoReg 为1时选择data_dm_to_reg,即数据存储器的数据，即load指令时
+		.MemWrite(MemWrite),
+		.ALUsrc(ALUsrc),
+		.Wen_Reg_Wr(RegWrite),
+		.lui(lui),
+		.U_type(U_type),
+		.jal(jal),
+		.jalr(jalr),
+		.beq(beq),
+		.bne(bne),
+		.blt(blt),
+		.bge(bge),
+		.bltu(bltu),
+		.bgeu(bgeu),
+		.RW_type(RW_type)
+	);
+	
+	 Alu_Control Alu_Control_inst(
+		.opcode(opcode),
+		.ALUop(ALUop),
+		.funct3(funct3),
+		.funct7(funct7),
+		.ALUctl(ALU_Ctrl)
+	);
+
+endmodule

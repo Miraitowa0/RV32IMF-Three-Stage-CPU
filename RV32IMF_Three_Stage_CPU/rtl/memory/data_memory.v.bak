@@ -1,0 +1,96 @@
+module data_memory(
+	clk,
+	rst,
+	data_in,
+	addr,
+	W_en,
+	R_en,
+	RW_type,
+	data_out
+);
+	input clk;
+	input rst;
+	input [31:0]data_in;
+	input [31:0]addr;
+	input W_en;
+	input R_en;
+	input [2:0]RW_type; //000 sb lb ; 001 sh lh; 010 sw  lw  ;100 lbu ;101 lhu,这也是func3信号
+	output [31:0]data_out;
+	
+	reg [31:0]ram[255:0];//数据存储
+	
+	wire [31:0]Rd_data;//数据初始化数据
+	
+	assign Rd_data = ram[addr[9:2]];//数据初始化,作为读基准
+	
+	reg [31:0]Wr_data_B; 
+	wire [31:0]Wr_data_H;
+	wire [31:0]Wr_data;
+	
+/////////////仿真测试所需代码//////////////	
+	initial begin 
+    // 读取初始化文件，赋值给ram（对应索引0~255）
+    // 格式：$readmemh("文件路径", 数组名, 起始索引, 结束索引)
+    $readmemh("E:/RISCV_Prj/RV321M_ThreeStage/ram_init.txt", ram, 0, 255);
+    
+    // 可选：调试打印，验证读取结果
+    $display("ram[0] = %h", ram[0]);
+    $display("ram[1] = %h", ram[1]); 
+end
+	
+////////考虑地址不对其的情况，写入数据是需要考虑数据位置/////////
+	always@(*) begin //字节写入
+		case(addr[1:0])
+			2'b00: Wr_data_B = {Rd_data[31:8],data_in[7:0]};
+			2'b01: Wr_data_B = {Rd_data[31:16],data_in[7:0],Rd_data[7:0]};
+			2'b10: Wr_data_B = {Rd_data[31:24],data_in[7:0],Rd_data[15:0]};
+			2'b11: Wr_data_B = {data_in[7:0],Rd_data[23:0]};
+		endcase
+	end
+	
+	//半字写入情况，考虑部分对齐
+	assign Wr_data_H = addr[1] ? {data_in[15:0],Rd_data[15:0]} : {Rd_data[31:16],data_in[15:0]};
+	
+	reg [31:0]Wr_data_reg;
+	always@(*) begin
+		 case(RW_type[1:0])
+			2'b00: Wr_data_reg = Wr_data_B;  // 字节写入（sb）
+			2'b01: Wr_data_reg = Wr_data_H;  // 半字写入（sh）
+			2'b10: Wr_data_reg = data_in;    // 字写入（sw）
+			default: Wr_data_reg = 32'd0;    // 默认清0，避免无效写入
+		 endcase
+	end
+	 
+	assign Wr_data = Wr_data_reg;
+	 
+	always @(posedge clk ) begin  //写入数据
+		if (W_en) begin
+			ram[addr[9:2]]<= Wr_data;
+		end
+	end
+	
+	reg [7:0]Rd_data_B; 
+	wire [15:0]Rd_data_H;
+	wire [31:0]Rd_data_B_ext;
+	wire [31:0]Rd_data_H_ext;
+	
+////////考虑地址不对其的情况，读取数据是也需要考虑数据位置/////////
+	always@(*) begin //字节读取
+		case(addr[1:0])
+			2'b00: Rd_data_B = Rd_data[7:0];
+			2'b01: Rd_data_B = Rd_data[15:8];
+			2'b10: Rd_data_B = Rd_data[23:16];
+			2'b11: Rd_data_B = Rd_data[31:24];
+		endcase
+	end	
+	//半字读取
+	assign Rd_data_H = addr[1] ? Rd_data[31:16] : Rd_data[15:0] ;
+	//根据RW_type 确定是有符号还是无符号扩展
+	assign Rd_data_B_ext = RW_type[2] ? {24'b0,Rd_data_B} : {{24{Rd_data_B[7]}},Rd_data_B};
+	assign Rd_data_H_ext = RW_type[2] ? {16'b0,Rd_data_H} : {{16{Rd_data_H[15]}},Rd_data_H};
+	
+	assign data_out = ( RW_type[1:0] == 2'b00 ) ? Rd_data_B_ext : 
+							( RW_type[1:0] == 2'b01 ) ? Rd_data_H_ext : Rd_data;
+	
+	
+endmodule

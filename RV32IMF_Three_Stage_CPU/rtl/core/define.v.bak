@@ -1,0 +1,37 @@
+`define		zero_word		32'd0
+
+`define		U_lui		7'b0110111
+`define		U_auipc	7'b0010111
+`define		J_jal		7'b1101111
+`define		I_jalr	7'b1100111
+`define		I_laod	7'b0000011
+`define		I_arith	7'b0010011
+`define		B_instr	7'b1100011
+`define		S_store	7'b0100011
+`define 		R_arith	7'b0110011
+
+`define 	ADD  			5'b00001
+`define 	SUB  			5'b00011
+
+`define 	AND  			5'b00100
+`define 	OR   			5'b00101
+`define 	XOR  			5'b00110
+`define  NOR			5'b00111
+
+`define 	SLT  			5'b01001
+`define 	SLTU 			5'b01000
+
+`define 	SLL  			5'b01100
+`define 	SRL  			5'b01101
+`define 	SRA  			5'b01110
+
+`define  MUL    		5'b10000
+`define  MULH   		5'b10001   
+`define  MULHSU 		5'b10010
+`define  MULHU  		5'b10011
+
+`define  DIV    		5'b10100
+`define  DIVU   		5'b10101
+`define  REM    		5'b10110
+`define  REMU   		5'b10111
+
