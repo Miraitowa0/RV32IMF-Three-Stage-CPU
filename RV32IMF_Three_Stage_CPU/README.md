@@ -189,7 +189,5 @@ RV32IMF-Three-Stage-CPU/
 
 ├── README.md            # 项目说明文件
 
-├── LICENSE              # 开源许可证，可选
-
 └── .gitignore           # Git 忽略文件
 
